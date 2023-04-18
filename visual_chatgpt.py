@@ -92,7 +92,7 @@ def cut_dialogue_history(history_memory, keep_last_n_words=500):
         return history_memory
     tokens = history_memory.split()
     n_tokens = len(tokens)
-    print(f"history_memory:{history_memory}, n_tokens: {n_tokens}")
+    print(f'history_memory:{history_memory}, n_tokens: {n_tokens}')
     if n_tokens < keep_last_n_words:
         return history_memory
     paragraphs = history_memory.split('\n')
