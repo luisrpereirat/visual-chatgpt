@@ -8,22 +8,30 @@ See our paper: [<font size=5>Visual ChatGPT: Talking, Drawing and Editing with V
     <img src="https://img.shields.io/badge/%F0%9F%A4%97-Open%20in%20Spaces-blue" alt="Open in Spaces">
 </a>
 
-<a src="https://colab.research.google.com/assets/colab-badge.svg" href="https://colab.research.google.com/drive/11BtP3h-w0dZjA-X8JsS9_eo8OeGYvxXB">
+<a src="https://colab.research.google.com/assets/colab-badge.svg" href="https://colab.research.google.com/drive/1P3jJqKEWEaeNcZg8fODbbWeQ3gxOHk2-?usp=sharing">
     <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab">
 </a>
 
 ## Updates:
+- Now Visual ChatGPT supports [GroundingDINO](https://github.com/IDEA-Research/GroundingDINO) and [segment-anything](https://github.com/facebookresearch/segment-anything)! Thanks **@jordddan** for his efforts. For the image editing case, `GroundingDINO` is first used to locate bounding boxes guided by given text, then `segment-anything` is used to generate the related mask, and finally stable diffusion inpainting is used to edit image based on the mask. 
 
-- Add custom GPU/CPU assignment
-- Add windows support
-- Merge HuggingFace ControlNet, Remove download.sh
-- Add Prompt Decorator
-- Add HuggingFace and Colab Demo
-- Clean Requirements
+
+- Now Visual ChatGPT can support Chinese! Thanks to **@Wang-Xiaodong1899** for his efforts.
+- We propose the **template** idea in Visual ChatGPT!
+    - A template is a **pre-defined execution flow** that assists ChatGPT in assembling complex tasks involving multiple foundation models. 
+    - A template contains the **experiential solution** to complex tasks as determined by humans. 
+    - A template can **invoke multiple foundation models** or even **establish a new ChatGPT session**
+    - To define a **template**, simply adding a class with attributes `template_model = True`
+- Thanks to **@ShengmingYin** and **@thebestannie** for providing a template example in `InfinityOutPainting` class (see the following gif)
+    - Firstly, run `python visual_chatgpt.py --load "ImageCaptioning_cuda:0,ImageEditing_cuda:1,VisualQuestionAnswering_cuda:2"`
+    - Secondly, say `extend the image to 2048x1024` to Visual ChatGPT!
+    - By simply creating an `InfinityOutPainting` template, Visual ChatGPT can seamlessly extend images to any size through collaboration with existing `ImageCaptioning`, `ImageEditing`, and `VisualQuestionAnswering` foundation models, **without the need for additional training**.
+- **Visual ChatGPT needs the effort of the community! We crave your contribution to add new and interesting features!**
+<img src="./assets/demo_inf.gif" width="750">
 
 
 ## Insight & Goal:
-One the one hand, **ChatGPT (or LLMs)** serves as a **general interface** that provides a broad and diverse understanding of a
+On the one hand, **ChatGPT (or LLMs)** serves as a **general interface** that provides a broad and diverse understanding of a
 wide range of topics. On the other hand, **Foundation Models** serve as **domain experts** by providing deep knowledge in specific domains.
 By leveraging **both general and deep knowledge**, we aim at building an AI that is capable of handling various tasks.
 
@@ -54,6 +62,8 @@ conda activate visgpt
 
 #  prepare the basic environments
 pip install -r requirements.txt
+pip install  git+https://github.com/IDEA-Research/GroundingDINO.git
+pip install  git+https://github.com/facebookresearch/segment-anything.git
 
 # prepare your private OpenAI key (for Linux)
 export OPENAI_API_KEY={Your_Private_Openai_Key}
@@ -76,14 +86,15 @@ python visual_chatgpt.py --load ImageCaptioning_cpu,Text2Image_cpu
 python visual_chatgpt.py --load "ImageCaptioning_cuda:0,Text2Image_cuda:0"
                                 
 # Advice for 4 Tesla V100 32GB                            
-python visual_chatgpt.py --load "ImageCaptioning_cuda:0,ImageEditing_cuda:0,
+python visual_chatgpt.py --load "Text2Box_cuda:0,Segmenting_cuda:0,
+    Inpainting_cuda:0,ImageCaptioning_cuda:0,
     Text2Image_cuda:1,Image2Canny_cpu,CannyText2Image_cuda:1,
     Image2Depth_cpu,DepthText2Image_cuda:1,VisualQuestionAnswering_cuda:2,
     InstructPix2Pix_cuda:2,Image2Scribble_cpu,ScribbleText2Image_cuda:2,
-    Image2Seg_cpu,SegText2Image_cuda:2,Image2Pose_cpu,PoseText2Image_cuda:2,
+    SegText2Image_cuda:2,Image2Pose_cpu,PoseText2Image_cuda:2,
     Image2Hed_cpu,HedText2Image_cuda:3,Image2Normal_cpu,
     NormalText2Image_cuda:3,Image2Line_cpu,LineText2Image_cuda:3"
-                             
+
 ```
 
 ## GPU memory usage
